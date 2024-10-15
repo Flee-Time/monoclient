@@ -1,0 +1,80 @@
+/* The container directly under the header takes full space */
+.main-content {
+    flex: 1; /* Takes the remaining height */
+    flex-grow: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+.dashboard-container {
+    background-color: #2c2c2e;
+    color: white;
+  }
+  
+  .sidebar {
+    background-color: #1c1c1e;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .user-info {
+    .profile-picture {
+      width: 50px;
+      height: 50px;
+      background-color: #444;
+      border-radius: 50%;
+    }
+  
+    .username {
+      font-size: 1.2rem;
+    }
+  }
+  
+  .rooms {
+    margin-top: 20px;
+    h5 {
+      color: #aaa;
+    }
+  
+    .room-list p {
+      cursor: pointer;
+      margin: 5px 0;
+      &:hover {
+        color: #fff;
+      }
+    }
+  }
+  
+  .chat-area {
+    display: flex;
+    flex-direction: column;
+    .chat-header {
+      background-color: #2c2c2e;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  
+    .chat-messages {
+      overflow-y: auto;
+      background-color: #3a3a3c;
+    }
+  
+    .message-box {
+      background-color: #4a4a4c;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  
+    button {
+      border: none;
+      background: none;
+      color: #0dcaf0;
+  
+      &:hover {
+        color: #0bb5e8;
+      }
+  
+      i {
+        font-size: 1.5rem;
+      }
+    }
+  }
+  

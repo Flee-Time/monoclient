@@ -1,0 +1,26 @@
+.app-container {
+  height: 100%;
+  width: 100%;
+  background-color: #24242480;
+}
+
+.card {
+  max-width: 400px;
+  background-color: #2c2c2e;
+  border: none;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+  .title {
+    font-family: "Afacad Flux";
+    font-size: 4rem;
+    color: white;
+    margin-bottom: 20px;
+  }
+
+  .loader-container {
+    height: 100px;
+    width: 100%;
+  }
+}
