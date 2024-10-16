@@ -8,7 +8,7 @@ type ServerContextType = {
 const ServerContext = createContext<ServerContextType | undefined>(undefined);
 
 export const ServerProvider = ({ children }: { children: ReactNode }) => {
-  const [serverUrl, setServerUrl] = useState<string>("https://nightwing.local:8081");
+  const [serverUrl, setServerUrl] = useState<string>("https://monolink.sfg.quest:8081");
 
   return (
     <ServerContext.Provider value={{ serverUrl, setServerUrl }}>

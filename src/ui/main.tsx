@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+//import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 import { ServerProvider } from "./ServerContext.tsx";
@@ -34,10 +34,11 @@ const router = createHashRouter([
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+  // Disabled because it was runing functions in useEffect twice
+  //<StrictMode>
     <ServerProvider>
       <Header />
       <RouterProvider router={router} />
     </ServerProvider>
-  </StrictMode>
+  //</StrictMode>
 );

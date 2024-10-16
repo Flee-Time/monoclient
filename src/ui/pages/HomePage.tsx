@@ -5,10 +5,7 @@ import { ScaleLoader } from "react-spinners";
 
 function HomePage() {
   const navigate = useNavigate();
-  const sessionId = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("SESSION_ID="))
-    ?.split("=")[1];
+  const sessionId = localStorage.getItem("sessionId");
 
   useEffect(() => {
     if (sessionId && sessionId.length === 64) {

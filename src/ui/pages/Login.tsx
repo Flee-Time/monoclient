@@ -19,27 +19,30 @@ function Login() {
     setLoading(true);
 
     try {
+      // Make the login request
       const response = await fetch(`${serverUrl}/login`, {
         method: "POST",
+        credentials: "include", // Include cookies
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
+    
       if (response.ok) {
+        // Check if we received the correct data (success)
         const data = await response.json();
+        console.log(data);
         const sessionId = data.sessionId;
-
+    
         if (sessionId && sessionId.length === 64) {
-          const expires = new Date();
-          expires.setMonth(expires.getMonth() + 1);
-          document.cookie = `SESSION_ID=${sessionId}; path=/; max-age=${expires.toUTCString()}; Secure;`;
-
+          localStorage.setItem("sessionId", sessionId);
+          
           navigate("/dashboard");
         } else {
           setErrorMessage("Invalid session ID received.");
           setShowModal(true);
         }
       } else {
+        // Handle error responses
         const errorData = await response.json();
         setErrorMessage(errorData.message || "Login failed. Please try again.");
         setShowModal(true);
