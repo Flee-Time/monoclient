@@ -1,8 +1,14 @@
 {
     "appId": "com.KorayBilir.Monolink",
     "files": ["dist-electron", "dist-react"],
-    "extraResources": ["dist-electron/preload.cjs"],
+    "extraResources": ["dist-electron/preload.cjs", "src/assets/*", "src/assets/sounds/*"],
     "icon": "./src/assets/desktopIcon.png",
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "https://monolink.sfg.quest:8081/updates/"
+      }
+    ],
     "mac": {
         "target": "dmg"
     },
@@ -11,6 +17,6 @@
         "category": "Utility"
     },
     "win": {
-        "target": ["portable", "msi"]
+        "target": "nsis"
     }
 }

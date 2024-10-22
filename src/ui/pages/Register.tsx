@@ -1,6 +1,8 @@
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useServer } from "../ServerContext";
+import Cropper from "react-easy-crop";
+import getCroppedImg from "../util";
 import "../styles/Register.scss";
 import {
   Form,
@@ -22,18 +24,56 @@ function Register() {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [croppedImage, setCroppedImage] = useState<string | null>(null);
 
   const [modalMessage, setModalMessage] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [showCropModal, setShowCropModal] = useState<boolean>(false);
+
   const handleProfilePictureChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setProfilePicture(file);
-      setPreviewUrl(URL.createObjectURL(file));
+      setPreviewUrl(URL.createObjectURL(file)); // Set preview of the selected image
+      setShowCropModal(true); // Show the cropping modal when a file is selected
+
+      // Reset the input value so that selecting the same file triggers the change event again
+      e.target.value = ""; // Reset input value to allow re-selecting the same file
     }
+  };
+
+  const onCropComplete = useCallback(
+    (_: any, croppedAreaPixels: any) => {
+      setCroppedAreaPixels(croppedAreaPixels);
+    },
+    []
+  );
+
+  // Handle the cropping when 'Done' is clicked
+  const handleCrop = async () => {
+    if (profilePicture && croppedAreaPixels && previewUrl) {
+      // Crop the image and generate a new Blob
+      const croppedBlobUrl = await getCroppedImg(previewUrl, croppedAreaPixels);
+
+      // Generate a URL for the cropped image and display it
+      const croppedImageUrl = URL.createObjectURL(croppedBlobUrl);
+      setCroppedImage(croppedImageUrl); // Set the URL of the cropped image
+      setShowCropModal(false); // Hide the modal
+    }
+  };
+
+  // Handle the 'Cancel' action in the crop modal
+  const handleCancelCrop = () => {
+    setShowCropModal(false); // Hide the modal without cropping
+    setProfilePicture(null); // Remove selected profile picture
+    setPreviewUrl(null);
+    setCroppedImage(null);
   };
 
   const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
@@ -47,12 +87,23 @@ function Register() {
       return;
     }
 
+    if (!croppedImage) {
+      setModalMessage("Please upload and crop a profile picture.");
+      setShowModal(true);
+      setLoading(false);
+      return;
+    }
+
     const formData = new FormData();
     formData.append("username", username);
     formData.append("email", email);
     formData.append("password", password);
-    if (profilePicture) {
-      formData.append("profilePicture", profilePicture);
+
+    if (croppedImage) {
+      const response = await fetch(croppedImage);
+      const blob = await response.blob();
+      const file = new File([blob], "profile.jpg", { type: "image/jpeg" });
+      formData.append("profilePicture", file);
     }
 
     try {
@@ -83,7 +134,7 @@ function Register() {
   const handleCloseModal = () => {
     setShowModal(false);
     if (isSuccess) {
-      navigate("/login"); 
+      navigate("/login");
     }
   };
 
@@ -113,7 +164,13 @@ function Register() {
             </Form.Group>
 
             <div className="profile-picture-container mb-3">
-              {previewUrl ? (
+              {croppedImage ? (
+                <img
+                  src={croppedImage}
+                  alt="Cropped Profile"
+                  className="profile-preview"
+                />
+              ) : previewUrl ? (
                 <img
                   src={previewUrl}
                   alt="Profile Preview"
@@ -129,9 +186,45 @@ function Register() {
                 accept="image/*"
                 className="profile-input"
                 onChange={handleProfilePictureChange}
-                required
+                required={!croppedImage}
               />
             </div>
+
+            {/* Crop Modal */}
+            <Modal show={showCropModal} onHide={handleCancelCrop} centered>
+              <Modal.Header closeButton>
+                <Modal.Title>Crop your profile picture</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div
+                  style={{
+                    position: "relative",
+                    width: "100%",
+                    height: "400px", // Set the height to a larger value
+                  }}
+                >
+                  {previewUrl && (
+                    <Cropper
+                      image={previewUrl}
+                      crop={crop}
+                      zoom={zoom}
+                      aspect={1} // Aspect ratio of 1:1 for profile pictures
+                      onCropChange={setCrop}
+                      onZoomChange={setZoom}
+                      onCropComplete={onCropComplete}
+                    />
+                  )}
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleCancelCrop}>
+                  Cancel
+                </Button>
+                <Button variant="primary" onClick={handleCrop}>
+                  Done
+                </Button>
+              </Modal.Footer>
+            </Modal>
 
             <Row className="g-3">
               <Col md={6}>
@@ -150,21 +243,6 @@ function Register() {
               </Col>
 
               <Col md={6}>
-                <Form.Group controlId="password">
-                  <Form.Floating>
-                    <Form.Control
-                      type="password"
-                      placeholder="Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                    <label>Password</label>
-                  </Form.Floating>
-                </Form.Group>
-              </Col>
-
-              <Col md={6}>
                 <Form.Group controlId="email">
                   <Form.Floating>
                     <Form.Control
@@ -175,6 +253,21 @@ function Register() {
                       required
                     />
                     <label>Email</label>
+                  </Form.Floating>
+                </Form.Group>
+              </Col>
+
+              <Col md={6}>
+                <Form.Group controlId="password">
+                  <Form.Floating>
+                    <Form.Control
+                      type="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                    <label>Password</label>
                   </Form.Floating>
                 </Form.Group>
               </Col>

@@ -4,6 +4,10 @@ const electron = require("electron");
 
 electron.contextBridge.exposeInMainWorld("electron", {
   sendFrameAction: (payload) => ipcSend("sendFrameAction", payload),
+  sendNotification: (payload) => ipcSend("sendNotification", payload),
+  onUpdateStatus: (callback) => ipcOn('updateStatus', callback),
+  onDownloadProgress: (callback) => ipcOn('downloadProgress', callback),
+  sendRendererInitialized: () => ipcSend("rendererInitialized", null),
 } satisfies Window["electron"]);
 
 function ipcInvoke<Key extends keyof EventPayloadMapping>(

@@ -30,7 +30,6 @@ function Login() {
       if (response.ok) {
         // Check if we received the correct data (success)
         const data = await response.json();
-        console.log(data);
         const sessionId = data.sessionId;
     
         if (sessionId && sessionId.length === 64) {
