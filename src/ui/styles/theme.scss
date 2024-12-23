@@ -1,7 +1,6 @@
-@use "sass:color";
 @import url("https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&display=swap");
 @import "bootstrap/scss/bootstrap";
-@import "./_variables";
+@import "variables.module";
 
 ::-webkit-scrollbar {
   display: none !important;
@@ -22,15 +21,20 @@ body {
   font-family: "Afacad Flux";
 }
 
-.lr-text {
-  a {
-    color: #6345eb;
-    font-weight: bold;
-    text-decoration: none;
-    transition: color 0.2s ease;
+.btn-success {
+  background-color: $primary;
+  border-color: $primary;
+  color: $text-color;
+}
 
-    &:hover {
-      color: color.adjust(#6345eb, $lightness: -5%);
-    }
-  }
+.btn-success:hover {
+  background-color: $primary-hover;
+  border-color: $primary-hover;
+  color: $text-hover;
+}
+
+.btn-success:active {
+  background-color: $primary-active;
+  border-color: $primary-active;
+  color: $text-active;
 }

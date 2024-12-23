@@ -1,12 +1,12 @@
 {
-    "appId": "com.KorayBilir.Monolink",
+    "appId": "com.KorayBilir.Lantern",
     "files": ["dist-electron", "dist-react"],
-    "extraResources": ["dist-electron/preload.cjs", "src/assets/*", "src/assets/sounds/*"],
+    "extraResources": ["dist-electron/preload.cjs", "src/assets/*"],
     "icon": "./src/assets/desktopIcon.png",
     "publish": [
       {
         "provider": "generic",
-        "url": "https://monolink.sfg.quest:8081/updates/"
+        "url": "https://cyberia.sfg.quest:8081/updates/"
       }
     ],
     "mac": {

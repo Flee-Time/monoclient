@@ -3,7 +3,7 @@ import "./styles/Header.scss"
 function Header() {
   return (
     <header>
-      <span>Monolink</span>
+      <span>Lantern</span>
       <button
         id="minimize"
         onClick={() => window.electron.sendFrameAction("MINIMIZE")}

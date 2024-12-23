@@ -1,19 +1,20 @@
-import { session } from "electron";
-
 const electron = require("electron");
 
 electron.contextBridge.exposeInMainWorld("electron", {
   sendFrameAction: (payload) => ipcSend("sendFrameAction", payload),
   sendNotification: (payload) => ipcSend("sendNotification", payload),
-  onUpdateStatus: (callback) => ipcOn('updateStatus', callback),
-  onDownloadProgress: (callback) => ipcOn('downloadProgress', callback),
+  onUpdateStatus: (callback) => ipcOn("updateStatus", callback),
+  onDownloadProgress: (callback) => ipcOn("downloadProgress", callback),
   sendRendererInitialized: () => ipcSend("rendererInitialized", null),
+  shouldSendNotification: (callback) => ipcOn("shouldSendNotification", callback),
+  openExternal: (payload) => ipcSend("openExternal", payload),
 } satisfies Window["electron"]);
 
 function ipcInvoke<Key extends keyof EventPayloadMapping>(
-  key: Key
+  key: Key,
+  payload?: EventPayloadMapping[Key]
 ): Promise<EventPayloadMapping[Key]> {
-  return electron.ipcRenderer.invoke(key);
+  return electron.ipcRenderer.invoke(key, payload);
 }
 
 function ipcOn<Key extends keyof EventPayloadMapping>(

@@ -1,0 +1,64 @@
+@import '../variables.module';
+
+.chat-message-text {
+  font-size: 1rem;
+  color: $chat-text-color;
+  white-space: pre-wrap; /* Preserve newlines and spaces */
+  margin-top: 5px;
+  word-wrap: break-word; /* Prevent text overflow */
+  line-height: 1.4;
+}
+
+/* Inline Code */
+.chat-message-text code {
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 1em;
+  color: $chat-text-color;
+  white-space: pre-wrap;
+}
+
+/* Syntax-Highlighted Code Block */
+.chat-message-text pre {
+  background: $markdown-bg-color !important;
+  padding: 8px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 10px 0;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.9em;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+/* Plain Code Block (Non-Syntax Highlighted) */
+.chat-message-text pre code {
+  background: none;
+  padding: 0;
+  font-size: 1em;
+}
+
+/* Plain Code Block (Non-Syntax Highlighted) */
+.chat-message-text pre div {
+  background: $markdown-bg-color !important;
+}
+
+/* Plain Code Block (Non-Syntax Highlighted) */
+.chat-message-text pre code {
+  background: $markdown-bg-color !important;
+}
+
+/* Paragraph Styling */
+.chat-message-text p {
+  margin: 4px 0;
+}
+
+.chat-message-text a {
+  color: $link-color;
+  text-decoration: underline;
+}
+
+.chat-message-text a:hover {
+  color: $link-hover-color;
+}

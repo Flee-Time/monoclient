@@ -10,11 +10,11 @@ export function getPreloadPath() {
     );
 }
 
-export function getAssetsPath() {
+export function getAssetsPath(AssetPath: string) {
     return path.join(
         app.getAppPath(),
         isDev() ? '.' : '..',
-        '/src/assets/'
+        '/src/assets/', AssetPath
     );
 }
 

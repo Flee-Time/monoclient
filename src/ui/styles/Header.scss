@@ -1,3 +1,5 @@
+@import 'variables.module';
+
 header {
   position: absolute;
   height: 35px;
@@ -7,7 +9,7 @@ header {
   text-align: right;
   padding: 0.25rem;
   box-sizing: border-box;
-  background-color: #111111a1;
+  background-color: $header-bg-color;
   z-index: 1000;
   -webkit-app-region: drag;
 }
@@ -36,22 +38,22 @@ header span {
 }
 
 #close {
-  background-color: rgb(150, 0, 0);
+  background-color: $close-color;
 }
 #close:hover {
-  background-color: red;
+  background-color: $close-hover-color;
 }
 
 #minimize {
-  background-color: rgb(150, 150, 0);
+  background-color: $minimize-color;
 }
 #minimize:hover {
-  background-color: yellow;
+  background-color: $minimize-hover-color;
 }
 
 #maximize {
-  background-color: rgb(0, 150, 0);
+  background-color: $maximize-color;
 }
 #maximize:hover {
-  background-color: lime;
+  background-color: $maximize-hover-color;
 }

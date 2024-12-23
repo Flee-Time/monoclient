@@ -1,6 +1,6 @@
 import { isRouteErrorResponse, useRouteError, useNavigate } from "react-router-dom";
 import { Button } from 'react-bootstrap';
-import '../styles/ErrorPage.scss';
+import '../styles/pages/ErrorPage.scss';
 
 function ErrorPage() {
   const error = useRouteError();

@@ -1,0 +1,124 @@
+@import '../variables.module';
+
+.settings-overlay {
+  position: fixed;
+  top: 35px;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 35px);
+  display: flex;
+  z-index: 1050;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  pointer-events: none;
+}
+
+.settings-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.settings-sidebar {
+  width: 250px;
+  background-color: $sidebar-color;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border-right: 1px solid $seperator-color;
+  overflow-y: auto;
+
+  h5 {
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+  }
+
+  .nav-link {
+    color: $info-color;
+    margin: 5px 0;
+    padding: 8px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $sidebar-item-hover-color;
+      color: $text-color;
+    }
+
+    &.active {
+      background-color: $sidebar-item-hover-color;
+      color: $text-color;
+    }
+  }
+}
+
+/* Content */
+.settings-content {
+  flex-grow: 1;
+  padding: 20px;
+  background-color: $bg-color;
+  color: $text-color;
+  position: relative;
+  overflow-y: auto;
+
+  h4 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  img {
+    object-fit: cover;
+  }
+}
+
+/* Scrollbar Styling */
+.settings-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.settings-content::-webkit-scrollbar-thumb {
+  background: #4f545c;
+  border-radius: 4px;
+}
+
+.settings-content::-webkit-scrollbar-thumb:hover {
+  background: #36393f;
+}
+
+.settings-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: $text-color;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 1000;
+
+  &:hover {
+    color: $danger;
+    transform: scale(1.1);
+    transition: all 0.2s ease-in-out;
+  }
+}
+/* Push the Logout Button to the Bottom */
+.logout-button-wrapper {
+  margin-top: auto; // Push to the bottom
+  padding-top: 10px;
+  border-top: 1px solid $seperator-color;
+}
+
+.logout-button-wrapper .btn-outline-danger {
+  font-weight: bold;
+  border-color: $danger;
+  color: $danger;
+
+  &:hover {
+    background-color: $danger;
+    color: $text-color;
+  }
+}

@@ -2,6 +2,7 @@ import { useState, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useServer } from "../ServerContext";
 import { Form, Button, Card, Container, Modal, Spinner } from "react-bootstrap";
+import "../styles/pages/LoginPage.scss"
 
 function Login() {
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ function Login() {
   return (
     <Container
       fluid
-      className="app-container d-flex justify-content-center align-items-center"
+      className="d-flex justify-content-center align-items-center"
     >
       <Card className="text-center shadow-lg p-4" style={{ maxWidth: "400px" }}>
         <Card.Body>

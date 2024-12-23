@@ -9,6 +9,7 @@ type NewMessageNotificationPayload = {
 
 type UpdateStatusCallback = (message: string) => void;
 type DownloadProgressCallback = (progressObj: { percent: number }) => void;
+type ShouldSendNotificationCallback = (status: boolean) => void;
 
 type EventPayloadMapping = {
   sendFrameAction: FrameWindowAction;
@@ -16,6 +17,8 @@ type EventPayloadMapping = {
   updateStatus: string;
   downloadProgress: { percent: number };
   rendererInitialized: null;
+  shouldSendNotification: boolean;
+  openExternal: string;
 };
 
 interface Window {
@@ -25,5 +28,7 @@ interface Window {
     onUpdateStatus: (callback: UpdateStatusCallback) => () => void;
     onDownloadProgress: (callback: DownloadProgressCallback) => () => void;
     sendRendererInitialized: () => void;
+    shouldSendNotification: (callback: ShouldSendNotificationCallback) => void;
+    openExternal: (payload: openExternal) => void;
   };
 }

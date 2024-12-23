@@ -1,10 +1,12 @@
-import { Container, Col, Button, Form, InputGroup } from "react-bootstrap";
-import "../styles/Dashboard.scss";
+import { Container, Col, Button } from "react-bootstrap";
+import "../styles/pages/Dashboard.scss";
 import { useNavigate } from "react-router-dom";
 import { useServer } from "../ServerContext";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
-import { ArrowUp } from "react-bootstrap-icons";
+import MarkdownMessage from "../components/MarkdownMessage";
+import MessageInput from "../components/MessageInput";
+import SettingsScreen from "../components/SettingsScreen";
 
 interface UserData {
   id: string;
@@ -20,6 +22,8 @@ interface Message {
   timestamp: string;
 }
 
+const notificationSound = new Audio("../../src/assets/sounds/notif.ogg"); // implement getting asset path from electron side through ipc | Doesnt work atm
+
 function Dashboard() {
   const navigate = useNavigate();
   const { serverUrl } = useServer();
@@ -31,10 +35,25 @@ function Dashboard() {
   const [messageInput, setMessageInput] = useState<string>("");
 
   const messageEndRef = useRef<HTMLDivElement>(null);
+  const messageInputRef = useRef<HTMLTextAreaElement>(null);
   const socketRef = useRef<any>(null);
   const registeredUsersRef = useRef<UserData[]>([]);
   const openRoomNameRef = useRef<string>();
   const userDataRef = useRef<UserData>();
+  const showSettingsRef = useRef<boolean>();
+
+  const [scrollBehavior, setScrollBehavior] = useState<"auto" | "smooth">(
+    "smooth"
+  );
+  const [hasScrolledInitially, setHasScrolledInitially] =
+    useState<boolean>(false);
+
+  // Add to Dashboard Component
+  const [showSettings, setShowSettings] = useState(false);
+
+  // Open Settings Modal
+  const handleOpenSettings = () => setShowSettings(true);
+  const handleCloseSettings = () => setShowSettings(false);
 
   // Whenever registeredUsers state changes, update the ref
   useEffect(() => {
@@ -48,7 +67,10 @@ function Dashboard() {
   useEffect(() => {
     userDataRef.current = userData;
   }, [userData]);
-  
+
+  useEffect(() => {
+    showSettingsRef.current = showSettings;
+  }, [showSettings]);
 
   useEffect(() => {
     const socket = io(serverUrl, {
@@ -95,17 +117,30 @@ function Dashboard() {
         (user) => user.id === decodedMessage.originUserID
       );
 
-      const isSameRoom = sender?.username !== openRoomNameRef.current;
+      const senderUsername = sender?.username || "Unknown";
+      const senderProfilePicture = sender?.profilePicture
+        ? `data:image/jpeg;base64,${sender.profilePicture}`
+        : "fallback";
 
-      if (window.electron && decodedMessage.originUserID === userDataRef.current?.id) {
+      const isSameRoom = senderUsername === openRoomNameRef.current;
+      const isDifferentUser =
+        decodedMessage.originUserID !== userDataRef.current?.id;
+
+      if (window.electron && isDifferentUser) {
         // Send the notification through Electron
-        window.electron.sendNotification({
-          title: sender?.username || "Unknown", // Fallback to "Unknown" if username is undefined
-          body: decodedMessage.message, // The decoded message content
-          icon: sender?.profilePicture
-            ? `data:image/jpeg;base64,${sender.profilePicture}`
-            : "fallback", // Fallback to a valid default image
-          sameRoom: isSameRoom,
+        window.electron.shouldSendNotification((status) => {
+          if (status) {
+            notificationSound.play().catch((error) => {
+              console.error("Error playing audio:", error);
+            });
+
+            window.electron.sendNotification({
+              title: senderUsername,
+              body: decodedMessage.message, // The decoded message content
+              icon: senderProfilePicture, // Fallback to a valid default image
+              sameRoom: isSameRoom,
+            });
+          }
         });
       }
 
@@ -137,21 +172,68 @@ function Dashboard() {
     };
   }, [serverUrl]);
 
+  useEffect(() => {
+    const handleGlobalKeydown = (event: KeyboardEvent) => {
+      const activeElement = document.activeElement as HTMLElement;
+
+      // Check if the focused element is an input, textarea, or contenteditable
+      const isTypingInOtherInput =
+        activeElement.tagName === "INPUT" ||
+        activeElement.tagName === "TEXTAREA" ||
+        activeElement.isContentEditable;
+
+      if (
+        !isTypingInOtherInput &&
+        !showSettingsRef.current &&
+        event.key.length === 1
+      ) {
+        // Only focus if not typing in another input and key is a visible character
+        messageInputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeydown);
+
+    return () => {
+      window.removeEventListener("keydown", handleGlobalKeydown);
+    };
+  }, []);
+
+  // Save Settings -- PLACEHOLDER FUNCTION, CHANGE
+  const handleSaveSettings = (username: string, profilePicture?: File) => {
+    console.log("Saved Username:", username);
+    console.log("Saved Profile Picture:", profilePicture);
+    // Implement API call or state update logic here
+    setShowSettings(false);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("sessionId");
     navigate("/");
   };
 
   const handleRoomChange = (username: string) => {
-    setOpenRoomName(username);
-    setMessages([]); // Clear previous messages when room changes
+    if (username === openRoomName) {
+      return;
+    }
 
-    // Emit event to load chat history
+    setOpenRoomName(username);
+    setMessages([]);
+    setHasScrolledInitially(false); // Reset scroll state for new room
+
     if (socketRef.current && userData) {
       socketRef.current.emit("loadHistory", {
         destinationUsername: username,
       });
     }
+
+    // Instant scroll without smooth behavior
+    setScrollBehavior("auto");
+
+    // Focus the message input box after room change
+    setTimeout(() => {
+      messageInputRef.current?.focus();
+    }, 0);
   };
 
   const handleSendMessage = () => {
@@ -168,10 +250,22 @@ function Dashboard() {
     }
   };
 
-  // Scroll to bottom whenever the messages array is updated
+  // Scroll to bottom after messages are loaded
   useEffect(() => {
-    scrollToBottom();
+    if (messages.length > 0 && !hasScrolledInitially) {
+      scrollToBottom("auto");
+      setHasScrolledInitially(true); // Prevent re-triggering
+      setTimeout(() => setScrollBehavior("smooth"), 50); // Enable smooth scroll after initial load
+    } else {
+      scrollToBottom(scrollBehavior);
+    }
   }, [messages]);
+
+  const scrollToBottom = (behavior: "auto" | "smooth") => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior });
+    }
+  };
 
   // Utility function to decode base64 messages
   function decodeBase64Message(message: string): string {
@@ -185,10 +279,24 @@ function Dashboard() {
     );
   }
 
-  // Helper function to scroll to the bottom of the chat
-  const scrollToBottom = () => {
-    if (messageEndRef.current) {
-      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+  const getProfilePictureUrl = (base64String: string | undefined): string => {
+    if (!base64String) return "/default-avatar.png"; // Fallback to default avatar
+
+    try {
+      const mimeAdded = "data:image/jpeg;base64," + base64String;
+      const byteString = atob(mimeAdded.split(",")[1]); // Remove the base64 header
+      const mimeString = mimeAdded.split(",")[0].split(":")[1].split(";")[0]; // Extract MIME type
+
+      const arrayBuffer = new Uint8Array(byteString.length);
+      for (let i = 0; i < byteString.length; i++) {
+        arrayBuffer[i] = byteString.charCodeAt(i);
+      }
+
+      const blob = new Blob([arrayBuffer], { type: mimeString });
+      return URL.createObjectURL(blob); // Create a temporary object URL
+    } catch (error) {
+      console.error("Error creating preview URL:", error);
+      return "/default-avatar.png";
     }
   };
 
@@ -213,7 +321,7 @@ function Dashboard() {
       <Col md={3} className="sidebar d-flex flex-column p-4">
         {/* User Info */}
         {userData && (
-          <div className="user-info d-flex align-items-center mb-4">
+          <div className="user-info d-flex align-items-center">
             <div className="profile-picture rounded-circle me-3">
               {userData.profilePicture && (
                 <img
@@ -230,13 +338,15 @@ function Dashboard() {
         {/* Room List */}
         <div className="rooms flex-grow-1">
           <h5 className="text-muted">People</h5>
-          <div className="room-list">
+          <div className="room-list mt-3">
             {registeredUsers
               .filter((user) => user.id !== userData?.id) // Skip current user
               .map((user, index) => (
                 <div
                   key={index}
-                  className="room d-flex align-items-center mb-3"
+                  className={`room d-flex align-items-center mb-2 ${
+                    openRoomName === user.username ? "active" : ""
+                  }`}
                   onClick={() => handleRoomChange(user.username)}
                 >
                   {user.profilePicture && (
@@ -248,7 +358,13 @@ function Dashboard() {
                       }`} // Apply class conditionally if the user is online
                     />
                   )}
-                  <span className="room-username">{user.username}</span>
+                  <span
+                    className={`room-username ${
+                      openRoomName === user.username ? "active" : ""
+                    }`}
+                  >
+                    {user.username}
+                  </span>
                 </div>
               ))}
           </div>
@@ -256,16 +372,16 @@ function Dashboard() {
 
         {/* Logout Button */}
         <Button
-          variant="outline-danger"
+          variant="outline-info"
           className="mt-auto logout-button align-self-start"
-          onClick={handleLogout}
+          onClick={handleOpenSettings}
         >
-          Logout
+          Settings
         </Button>
       </Col>
 
       {/* Main Content - Chat Area */}
-      <Col md={9} className="chat-area d-flex flex-column p-0">
+      <Col className="chat-area d-flex flex-column p-0">
         <div className="chat-header px-3 py-2 border-bottom">
           <h4 className="room-name">
             {openRoomName ? openRoomName : "No Room Selected"}
@@ -316,9 +432,10 @@ function Dashboard() {
                       </div>
                     </div>
                   )}
-
                   <div className={`chat-message-wrapper`}>
-                    <div className="chat-message-text">{message.message}</div>
+                    <div className="chat-message-text">
+                      <MarkdownMessage message={message.message} />
+                    </div>
                   </div>
                 </div>
               );
@@ -329,23 +446,23 @@ function Dashboard() {
           <div ref={messageEndRef}></div> {/* Scroll anchor */}
         </div>
         {/* Message Input at the Bottom */}
-        <InputGroup className="message-box p-3">
-          <Form.Control
-            value={messageInput}
-            onChange={(e) => setMessageInput(e.target.value)}
-            placeholder="Type a message..."
-            aria-label="Message Box"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleSendMessage();
-              }
-            }}
-          />
-          <Button variant="info" onClick={handleSendMessage}>
-            <ArrowUp />
-          </Button>
-        </InputGroup>
+        <MessageInput
+          ref={messageInputRef}
+          messageInput={messageInput}
+          setMessageInput={setMessageInput}
+          handleSendMessage={handleSendMessage}
+        />
       </Col>
+      <SettingsScreen
+        show={showSettings}
+        onClose={handleCloseSettings}
+        onLogout={handleLogout}
+        userData={{
+          username: userData?.username || "",
+          profilePicture: getProfilePictureUrl(userData?.profilePicture),
+        }}
+        onSave={handleSaveSettings}
+      />
     </Container>
   );
 }

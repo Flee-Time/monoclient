@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useServer } from "../ServerContext";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "../util";
-import "../styles/Register.scss";
+import "../styles/pages/Register.scss";
 import {
   Form,
   Button,
@@ -141,7 +141,7 @@ function Register() {
   return (
     <Container
       fluid
-      className="app-container d-flex justify-content-center align-items-center"
+      className="d-flex justify-content-center align-items-center"
     >
       <Card className="text-center shadow-lg p-4" style={{ maxWidth: "650px" }}>
         <Card.Body>

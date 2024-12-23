@@ -1,0 +1,103 @@
+@use "sass:color";
+
+// =======================================
+// General Theming
+// =======================================
+
+// Background and Base Colors
+$bg-color: #2f3136;
+$light: white;
+$dark: #242424;
+
+// Primary Palette
+$primary: #198754;          // Primary color
+$secondary: #FFC107;        // Secondary color
+$success: #28a745;          // Success color
+$danger: #dc3545;           // Danger color
+$info: #17a2b8;             // Info color
+
+// Text Colors
+$text-color: white;
+$info-color: #b9bbbe;
+$link-color: #7289da;
+$link-hover-color: color.adjust($link-color, $lightness: -5%);
+$message-username-color: #7289da;
+
+// Status Colors
+$online-color: color.adjust($success, $lightness: 5%);
+$offline-color: color.adjust($bg-color, $lightness: 15%);
+
+// For Buttons
+$primary-hover: color.adjust($primary, $lightness: -5%);
+$text-hover: color.adjust($text-color, $lightness: -5%);
+$primary-active: color.adjust($primary, $lightness: -8%);
+$text-active: color.adjust($text-color, $lightness: -8%);
+
+// =======================================
+// Sidebar and Chat Layout
+// =======================================
+
+// Sidebar
+$sidebar-color: color.adjust($bg-color, $lightness: -5%);
+$sidebar-item-hover-color: color.adjust($bg-color, $lightness: 1%);
+
+// Chat Header
+$chat-header-color: color.adjust($bg-color, $lightness: -2.5%);
+
+// Separators
+$seperator-color: color.adjust($bg-color, $lightness: 12%);
+
+// Scrollbar
+$scrollbar-bg-color: #2a2a2a;
+$scrollbar-thumb-color: #7289da;
+$scrollbar-thumb-hover-color: color.adjust($scrollbar-thumb-color, $lightness: -6%);
+
+// =======================================
+// Authentication Screens
+// =======================================
+
+// Register Screen
+$pfp-bg-color: color.adjust($bg-color, $lightness: 3%);
+
+// Login Screen
+$card-bg-color: color.adjust($bg-color, $lightness: -5%);
+
+// =======================================
+// Message Input
+// =======================================
+
+$messagebox-bg-color: $chat-header-color;
+$message-textarea-bg-color: color.adjust($bg-color, $lightness: 5%);
+$message-textarea-border-color: color.adjust($bg-color, $lightness: -5%);
+$send-button-bg-color: $scrollbar-thumb-color;
+$send-button-bg-hover-color: $scrollbar-thumb-hover-color;
+
+// =======================================
+// Markdown Theming
+// =======================================
+
+$chat-text-color: color.adjust($light, $lightness: -5%);
+$markdown-bg-color: color.adjust($bg-color, $lightness: -3.5%);
+
+// =======================================
+// Header Theming
+// =======================================
+
+$header-bg-color: #111111a1;
+$close-hover-color: red; 
+$close-color: color.adjust($close-hover-color, $lightness: -18%);
+$minimize-hover-color: yellow;
+$minimize-color: color.adjust($minimize-hover-color, $lightness: -18%);
+$maximize-hover-color: lime;
+$maximize-color: color.adjust($maximize-hover-color, $lightness: -18%);
+
+// =======================================
+// Loader Theming
+// =======================================
+
+$loader-color: #1191d8;
+
+// Export Variables for JavaScript
+:export {
+  loadercolor: $loader-color;
+}

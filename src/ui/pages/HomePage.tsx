@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import "../styles/HomePage.scss";
+import "../styles/pages/HomePage.scss";
 import { ProgressBar, Alert, Card, Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { ScaleLoader } from "react-spinners";
+import variables from "../styles/_variables.module.scss";
 
 function HomePage() {
   const navigate = useNavigate();
@@ -57,13 +58,13 @@ function HomePage() {
   return (
     <Container
       fluid
-      className="app-container d-flex justify-content-center align-items-center"
+      className="d-flex justify-content-center align-items-center"
     >
       <Card className="text-center shadow-lg p-4" style={{ maxWidth: "400px" }}>
         <Card.Body>
-          <h1 className="title mb-4">Monolink</h1>
+          <h1 className="title mb-4">Lantern</h1>
           <div className="loader-container d-flex justify-content-center align-items-center">
-            <ScaleLoader color="#1191d8" height={50} width={5} />
+            <ScaleLoader color={variables.loadercolor} height={50} width={5} />
           </div>
 
           {/* Display the status message */}
@@ -78,7 +79,6 @@ function HomePage() {
                 now={downloadProgress}
                 label={`${downloadProgress.toFixed(2)}%`}
               />
-              <p className="mt-2">{downloadProgress.toFixed(2)}% Downloaded</p>
             </>
           )}
         </Card.Body>

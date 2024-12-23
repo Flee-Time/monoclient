@@ -1,0 +1,42 @@
+@import "../variables.module";
+
+.message-box {
+    background-color: $messagebox-bg-color;
+    padding: 10px;
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    box-sizing: border-box;
+    border-top: 1px solid $seperator-color;
+
+    textarea.form-control {
+      flex-grow: 1;
+      background-color: $message-textarea-bg-color;
+      color: $light;
+      border: 1px solid $message-textarea-border-color;
+      border-radius: 5px;
+      padding: 5px;
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.5em;
+      resize: none; /* Prevent manual resizing */
+      overflow-y: auto;
+      max-height: calc(1.5em * 12); /* Limit to 12 lines */
+    }
+
+    .btn-info {
+      background-color: $send-button-bg-color;
+      color: $light;
+      border: none;
+      transition: background-color 0.3s ease-in-out;
+      min-width: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+
+      &:hover {
+        background-color: $send-button-bg-hover-color;
+      }
+    }
+  }
