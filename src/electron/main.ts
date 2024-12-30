@@ -32,6 +32,7 @@ app.on("ready", () => {
     height: mainWindowState.height,
     x: mainWindowState.x,
     y: mainWindowState.y,
+    icon: getAssetsPath("icon.png"),
     title: "Lantern",
     frame: false,
     vibrancy: "fullscreen-ui",

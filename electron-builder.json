@@ -2,7 +2,7 @@
     "appId": "com.KorayBilir.Lantern",
     "files": ["dist-electron", "dist-react"],
     "extraResources": ["dist-electron/preload.cjs", "src/assets/*"],
-    "icon": "./src/assets/desktopIcon.png",
+    "icon": "./src/assets/icon",
     "publish": [
       {
         "provider": "generic",
